@@ -50,35 +50,94 @@ namespace MCMV.Controllers
         [HttpGet]
         public IActionResult Cadastro() => View();
 
-        [HttpPost]
-        public IActionResult Cadastro(string user, string identific, string email, string senha, string confirmarSenha)
+    // Para inserir os dados recebidos do cadastro 
+    [HttpPost]
+    public async Task<IActionResult> Cadastro(string user, string identific, bool isInstit, string email, string senha, string confirmarSenha, IFormFile documentoInstituicao)
+    {
+        // Validação de E-mail
+        string padraoEmail = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        if (!Regex.IsMatch(email ?? "", padraoEmail))
         {
-            string padraoEmail = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            if (!Regex.IsMatch(email ?? "", padraoEmail))
+            ViewBag.Erro = "E-mail inválido!";
+            return View("Cadastro");
+        }
+
+        // Validação de Senha
+        if (senha != confirmarSenha)
+        {
+            ViewBag.Erro = "As senhas não coincidem!";
+            return View("Cadastro");
+        }
+
+        // Validação de CPF ou CNPJ
+        if (!Validador.ValidarDocumento(identific))
+        {
+            ViewBag.Erro = "CPF ou CNPJ inválido!";
+            return View("Cadastro");
+        }
+
+
+
+        bool instituicaoVerificada = false;
+
+
+        if (isInstit && identific.Length == 14)
+        {
+            // Tentativa 1: API
+            try
             {
-                ViewBag.Erro = "E-mail inválido!";
-                return View();
+                instituicaoVerificada =
+                    await Validador_Instituicao.VerificarInstituicao(identific);
+            }
+            catch
+            {
+                // API falhou → ignora
+                instituicaoVerificada = false;
             }
 
-            if (senha != confirmarSenha)
+            // Tentativa 2: Documento enviado
+            if (!instituicaoVerificada &&
+                documentoInstituicao != null &&
+                documentoInstituicao.Length > 0)
             {
-                ViewBag.Erro = "As senhas não coincidem!";
-                return View();
+                instituicaoVerificada = true;
+            }
+        }
+
+
+
+
+
+        // Verifica se o documento de usuário escolhido já existe no banco de dados para evitar duplicidade.
+        if (_registerService.UsuarioExiste(identific))
+        {
+            ViewBag.Erro = "Este usuário já está em uso.";
+            return View("Cadastro");
+        }
+
+        // Se todas as validações passaram, cria o novo usuário no banco de dados.
+        _registerService.CriarUsuario(user, senha, email, identific, instituicaoVerificada);
+
+        if (isInstit)
+        {
+            if (instituicaoVerificada)
+            {
+                ViewBag.Mensagem =
+                    "Analisamos seu CNPJ e o Documento Enviado e você é uma Instituição Verificada de Confiança!";
+                ViewBag.Tipo = "sucesso";
+            }
+            else
+            {
+                ViewBag.Mensagem =
+                    "Analisamos seu CNPJ e não encontramos a sua Instituição no Mapa OSC para Verificação de Conta.";
+                ViewBag.Tipo = "aviso";
             }
 
-            if (!Validador.ValidarDocumento(identific))
-            {
-                ViewBag.Erro = "CPF ou CNPJ inválido!";
-                return View();
-            }
+            return View("Login");
+        }
 
-            if (_registerService.UsuarioExiste(user))
-            {
-                ViewBag.Erro = "Este nome de usuário já está em uso.";
-                return View();
-            }
-
-            _registerService.CriarUsuario(user, senha, email ?? "", identific);
+        //  mensagem de sucesso para o usuário após o cadastro, informando que ele pode fazer login.            
+        TempData["MensagemSucesso"] = "Usuário criado com sucesso! Faça login para continuar.";
 
             TempData["MensagemSucesso"] = "Usuário criado com sucesso!";
             return RedirectToAction("Login");

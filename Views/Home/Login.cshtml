@@ -11,6 +11,28 @@
     <link rel="stylesheet" href="~/style/login.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     </head>
+    @if (ViewBag.Mensagem != null)
+{
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-box @ViewBag.Tipo">
+            <h3>
+                @(ViewBag.Tipo == "sucesso" ? "✅ Verificação concluída" : "⚠️ Atenção")
+            </h3>
+
+            <p>@ViewBag.Mensagem</p>
+
+            <button onclick="fecharModal()">OK</button>
+        </div>
+    </div>
+}
+<script>
+        function fecharModal() {
+            const modal = document.getElementById("modalOverlay");
+            if (modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
     <body>
         <div class="login-container">
             <div class="welcome-section">
