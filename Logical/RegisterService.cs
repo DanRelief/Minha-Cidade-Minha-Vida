@@ -28,12 +28,12 @@ namespace MCMV.Logical
             }
         }
 
-        public void CriarUsuario(string user, string senha, string email, string doc)
+        public void CriarUsuario(string user, string senha, string email, string doc, bool instituicaoVerificada)
         {
             using (var con = _db.GetConnection())
             {
                 con.Open();
-                string query = "INSERT INTO user_tb (usuario, senha, email, documento) VALUES (@user, @pass, @mail, @doc)";
+                string query = "INSERT INTO user_tb (usuario, senha, email, documento, verificaInst) VALUES (@user, @pass, @mail, @doc, @verificaInst)";
 
                 using (var cmd = new MySqlCommand(query, con))
                 {
@@ -41,6 +41,7 @@ namespace MCMV.Logical
                     cmd.Parameters.AddWithValue("@pass", senha);
                     cmd.Parameters.AddWithValue("@mail", email);
                     cmd.Parameters.AddWithValue("@doc", doc);
+                    cmd.Parameters.AddWithValue("@verificaInst", instituicaoVerificada);
 
                     cmd.ExecuteNonQuery();
                 }

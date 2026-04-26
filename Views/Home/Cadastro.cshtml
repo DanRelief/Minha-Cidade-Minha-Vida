@@ -32,7 +32,7 @@
                     }
 
                     @* asp-action="Cadastro" indica que, ao clicar no botão, os dados serão enviados para o método Cadastro no HomeController *@
-                    <form asp-action="Cadastro" method="post">
+                        <form asp-action="Cadastro" method="post" enctype="multipart/form-data">
                         <label for="user">Nome:</label>
                         <input type="text" id="user" name="user" maxlength="50" required>
 
@@ -45,6 +45,22 @@
                             <input type="checkbox" id="isInstit" name="isInstit" value="true">
                             <label for="isInstit">Sou uma instituição</label>
                         </div>
+                        
+
+                        <div class="file-upload" id="uploadArea" style="display:none;">
+                        <label>Comprovante da instituição (PDF, PNG ou JPEG):</label>
+                            <label for="documentoInstituicao" class="file-label">
+                                <span id="fileText">Selecionar arquivo</span>
+                            </label>
+
+                            <input type="file"
+                                   id="documentoInstituicao"
+                                   name="documentoInstituicao"
+                                   accept=".pdf,.png,.jpg,.jpeg"
+                                   hidden />
+                        </div>
+
+
 
                         <label for="email">E-mail:</label>
                         <input type="email" id="email" name="email" required>
@@ -60,25 +76,38 @@
                 </div>
             </div>
 
-            <script>
-                    const checkbox = document.getElementById("isInstit");
-                    const label = document.getElementById("labelIdentific");
-                    const inputIdentific = document.getElementById("identific");
+        <script>
+                const checkbox = document.getElementById("isInstit");
+                const label = document.getElementById("labelIdentific");
+                const inputIdentific = document.getElementById("identific");
+                const uploadArea = document.getElementById("uploadArea");
 
-                    // Escuta quando o usuário marca ou desmarca a caixa "Sou uma instituição"
-                    checkbox.addEventListener("change", () => {
-                        if (checkbox.checked) {
-                            // Se marcado, muda o texto para CNPJ
-                            label.innerText = "CNPJ:";
-                            inputIdentific.maxLength = 14;
-                        } else {
-                            // Se desmarcado, volta para CPF
-                            label.innerText = "CPF:";
-                            inputIdentific.maxLength = 11;
-                        }
-                        // Limpa o campo para evitar que um CPF seja enviado como CNPJ por erro
-                        inputIdentific.value = "";
+                const fileInput = document.getElementById("documentoInstituicao");
+                const fileText = document.getElementById("fileText");
+
+                if (fileInput && fileText) {
+                    fileInput.addEventListener("change", () => {
+                        fileText.textContent =
+                            fileInput.files.length > 0
+                                ? fileInput.files[0].name
+                                : "Selecionar arquivo";
                     });
-            </script>
+                }
+
+                checkbox.addEventListener("change", () => {
+                    if (checkbox.checked) {
+                        label.innerText = "CNPJ:";
+                        inputIdentific.maxLength = 14;
+                        uploadArea.style.display = "block";
+                    } else {
+                        label.innerText = "CPF:";
+                        inputIdentific.maxLength = 11;
+                        uploadArea.style.display = "none";
+                        if (fileText) fileText.textContent = "Selecionar arquivo";
+                    }
+
+                    inputIdentific.value = "";
+                });
+        </script>
         </body>
     </html>
