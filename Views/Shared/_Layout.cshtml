@@ -97,11 +97,20 @@
     
         <div class="navbar-custom">
             <nav>
-                <a asp-controller="Home" asp-action="IndexUsuario" class="active-link">Página inicial</a>
-                <a href="#">Instituições cadastradas</a>
-                <a href="#">Precisa de doação?</a>
-                <a href="#">Faça uma doação</a>
-                <a href="#">Portal da transparência</a>
+                <div class="navbar-custom">
+                    <nav>
+                        <a asp-controller="Home" asp-action="IndexUsuario" class="active-link">Página inicial</a>
+                        <a href="#">Instituições cadastradas</a>
+        
+                        @* Corrigido: Agora aponta para a tela cinza de solicitação *@
+                        <a asp-controller="Home" asp-action="PrecisaDeDoacao">Precisa de doação?</a>
+
+                        @* Corrigido: Aponta para a tela de fazer doação *@
+                        <a asp-controller="Home" asp-action="FacaUmaDoacao">Faça uma doação</a>
+
+                        <a href="#">Portal da transparência</a>
+                    </nav>
+                </div>
             </nav>
         </div>
     </header>

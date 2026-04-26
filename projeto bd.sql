@@ -18,3 +18,22 @@ ADD COLUMN BOOLEAN verificaInst;
 UPDATE user_tb
 SET documento = '12345678900'
 WHERE usuario = 'admin';
+
+CREATE TABLE SolicitacoesDoacao (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Instituicao VARCHAR(255),
+    DescricaoNecessidade TEXT,
+    NivelUrgencia VARCHAR(50),
+    PreferenciaContato VARCHAR(100),
+    DataSolicitacao DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+/*DROP TABLE IF EXISTS fazerumadoacao;*/
+CREATE TABLE FazerUmaDoacao (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Instituicao VARCHAR(255),
+    OQueDesejaDoar TEXT,
+    EstadoItem VARCHAR(50),
+    PreferenciaContato VARCHAR(100),
+    DataSolicitacao DATETIME DEFAULT CURRENT_TIMESTAMP
+);

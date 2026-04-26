@@ -1,0 +1,69 @@
+﻿@model MCMV.Models.SolicitacaoDoacao
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 50px;
+        background-color: #e0e0e0;
+        border-radius: 40px;
+        width: 50%;
+        margin: 50px auto;
+        text-align: center;
+    }
+    .form-group { width: 100%; margin-bottom: 15px; }
+    .form-group input, .form-group select {
+        width: 100%;
+        padding: 15px;
+        border-radius: 30px;
+        border: none;
+        background-color: #00a878;
+        color: white;
+        font-weight: bold;
+    }
+    .form-group input::placeholder { color: white; opacity: 0.8; }
+    .btn-submit {
+        background-color: #00a878;
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+</style>
+
+<div class="form-container">
+    <h3>Preencha as informações abaixo para concluir sua solicitação:</h3>
+    
+    <form asp-action="EnviarSolicitacao" method="post">
+        <div class="form-group">
+            <input asp-for="Instituicao" placeholder="Instituição:" />
+        </div>
+        <div class="form-group">
+            <input asp-for="DescricaoNecessidade" placeholder="Do que precisa:" />
+        </div>
+        <div class="form-group">
+            <select asp-for="NivelUrgencia">
+                <option value="">Nível de urgência:</option>
+                <option value="Baixo">Baixo</option>
+                <option value="Médio">Médio</option>
+                <option value="Alto">Alto</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input asp-for="PreferenciaContato" placeholder="Preferência de contato:" />
+        </div>
+        <button type="submit" class="btn-submit">ENVIAR</button>
+    </form>
+</div>
+
+<p style="text-align: center; color: #00a878; font-weight: bold;">
+    *Sua solicitação será analisada pela instituição, e você receberá o retorno por e-mail
+</p>

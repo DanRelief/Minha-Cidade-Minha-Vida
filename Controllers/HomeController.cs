@@ -1,58 +1,54 @@
 using Microsoft.AspNetCore.Mvc;
 using MCMV.Data;
 using MCMV.Logical;
+using MCMV.Models;
 using System.Text.RegularExpressions;
 
-public class HomeController : Controller
+namespace MCMV.Controllers
 {
-    // Variáveis privadas para armazenar os serviços de Login e Registro (Injeção de Dependência).
-    private readonly LoginService _loginService;
-    private readonly RegisterService _registerService;
-
-
-    public HomeController(LoginService loginService, RegisterService registerService)
+    public class HomeController : Controller
     {
-        _loginService = loginService;
-        _registerService = registerService;
-    }
+        private readonly LoginService _loginService;
+        private readonly RegisterService _registerService;
+        private readonly DonationService _donationService;
 
-    // --- LOGIN ---
-
-    // Carrega a página de Login
-    public IActionResult Login() => View();
-
-    // Recebe os dados do formulário de login (documento e senha) via método POST.
-    [HttpPost]
-    public IActionResult Login(string documento, string senha)
-    {
-        // Verifica se os dados inseridos são os mesmos do banco de dados 
-        bool valido = _loginService.ValidarLogin(documento, senha);
-
-        if (valido)
+        public HomeController(LoginService loginService, RegisterService registerService, DonationService donationService)
         {
-            // Se o login for válido, identifica se o documento é um CPF (usuário) ou CNPJ (instituição).
-            string tipo = _loginService.ObterTipoUsuario(documento);
-
-            // Redireciona para a tela correta dependendo do perfil do usuário logado.
-            if (tipo == "CPF")
-            {
-                return RedirectToAction("IndexUsuario");
-            }
-            else if (tipo == "CNPJ")
-            {
-                return RedirectToAction("IndexInstituicao");
-            }
+            _loginService = loginService;
+            _registerService = registerService;
+            _donationService = donationService;
         }
 
-        //Caso alguma das informações esteja incorret, exibe mensagem de erro
-        ViewBag.Erro = "CPF/CNPJ ou senha inválidos";
-        return View();
-    }
+        // Login
+        [HttpGet]
+        public IActionResult Login() => View();
 
-    // --- CADASTRO ---
+        [HttpPost]
+        public IActionResult Login(string documento, string senha)
+        {
+            bool valido = _loginService.ValidarLogin(documento, senha);
 
-    // Carrega a página de Cadastro.
-    public IActionResult Cadastro() => View();
+            if (valido)
+            {
+                string tipo = _loginService.ObterTipoUsuario(documento);
+
+                if (tipo == "CPF")
+                {
+                    return RedirectToAction("IndexUsuario");
+                }
+                else if (tipo == "CNPJ")
+                {
+                    return RedirectToAction("IndexInstituicao");
+                }
+            }
+
+            ViewBag.Erro = "CPF/CNPJ ou senha inválidos";
+            return View();
+        }
+
+        //Cadastro
+        [HttpGet]
+        public IActionResult Cadastro() => View();
 
     // Para inserir os dados recebidos do cadastro 
     [HttpPost]
@@ -143,21 +139,54 @@ public class HomeController : Controller
         //  mensagem de sucesso para o usuário após o cadastro, informando que ele pode fazer login.            
         TempData["MensagemSucesso"] = "Usuário criado com sucesso! Faça login para continuar.";
 
-        // Após cadastrar, manda o usuário para a tela de Login.
-        return RedirectToAction("Login");
+            TempData["MensagemSucesso"] = "Usuário criado com sucesso!";
+            return RedirectToAction("Login");
+        }
+
+        //tela inicial
+        public IActionResult IndexUsuario() => View();
+
+        public IActionResult IndexInstituicao() => View();
+
+
+        [HttpGet]
+        public IActionResult PrecisaDeDoacao()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult EnviarSolicitacao(SolicitacaoDoacao solicitacao)
+        {
+            if (ModelState.IsValid)
+            {
+                _donationService.SalvarSolicitacao(solicitacao);
+
+                TempData["MensagemSucesso"] = "Solicitação enviada com sucesso!";
+                return RedirectToAction("IndexUsuario");
+            }
+
+            return View("PrecisaDeDoacao", solicitacao);
+        }
+
+        [HttpGet]
+        public IActionResult FacaUmaDoacao()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult EnviarDoacao(FazerUmaDoacao doacao)
+        {
+            if (ModelState.IsValid)
+            {
+                _donationService.SalvarOfertaDoacao(doacao);
+
+                TempData["MensagemSucesso"] = "Oferta de doação enviada com sucesso!";
+                return RedirectToAction("IndexUsuario");
+            }
+
+            return View("FacaUmaDoacao", doacao);
+        }
     }
-
-    // --- TELAS PÓS-LOGIN ---
-
-    // Action que chama a View da página inicial do Usuário Comum 
-    public IActionResult IndexUsuario() => View();
-
-    // Action que chama a View da página inicial da Instituição
-    public IActionResult IndexInstituicao() => View();
-
-    // Action para a tela onde o usuário inicia o processo de doação.
-    public IActionResult FacaUmaDoacao() => View();
-
-    // Action para a tela onde alguém solicita o recebimento de uma doação.
-    public IActionResult PrecisaDeDoacao() => View();
 }

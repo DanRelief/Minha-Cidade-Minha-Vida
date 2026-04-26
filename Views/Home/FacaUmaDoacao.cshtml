@@ -1,0 +1,70 @@
+﻿@model MCMV.Models.FazerUmaDoacao
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Faça uma Doação";
+}
+
+<style>
+    .form-container-doar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px;
+        background-color: #D9D9D9;
+        border-radius: 50px;
+        width: 600px;
+        margin: 50px auto;
+        text-align: center;
+    }
+
+    .campo-form {
+        background-color: #00A878;
+        color: white;
+        border-radius: 25px;
+        padding: 12px 20px;
+        margin-bottom: 15px;
+        width: 80%;
+        border: none;
+        font-weight: bold;
+    }
+
+        .campo-form::placeholder {
+            color: rgba(255,255,255,0.8);
+        }
+
+    .btn-enviar-doar {
+        background-color: #00A878;
+        color: white;
+        border: none;
+        padding: 10px 40px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+
+<div class="form-container-doar">
+    <h2>Preencha as informações abaixo para concluir sua solicitação:</h2>
+
+    <form asp-controller="Home" asp-action="EnviarDoacao" method="post" style="width: 100%;">
+        <input asp-for="Instituicao" class="campo-form" placeholder="Instituição:" />
+        
+        <input asp-for="OQueDesejaDoar" class="campo-form" placeholder="O que deseja doar:" />
+        
+        <select asp-for="EstadoItem" class="campo-form">
+            <option value="">Estado do item:</option>
+            <option value="Novo">Novo</option>
+            <option value="Seminovo">Seminovo</option>
+            <option value="Usado (Bom estado)">Usado (Bom estado)</option>
+        </select>
+
+        <input asp-for="PreferenciaContato" class="campo-form" placeholder="Preferência de contato:" />
+
+        <button type="submit" class="btn-enviar-doar">ENVIAR</button>
+    </form>
+</div>
+
+<p style="color: #00A878; font-weight: bold; text-align: center;">
+    *Sua solicitação será analisada pela instituição, e você receberá o retorno por e-mail
+</p>

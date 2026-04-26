@@ -1,5 +1,4 @@
-﻿<link rel="stylesheet" href="~/style/indexUsuario.css" asp-append-version="true" />
-
+﻿@* Removido o link duplicado do topo, mantendo apenas a referência ao layout *@
 @{
     ViewData["Title"] = "Página Inicial - Minha Cidade, Minha Vida";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,7 +7,6 @@
 <div class="content-wrapper">
     <div class="info-section">
         <h2 class="title-green">Você Sabia?</h2>
-
         <ul class="info-list">
             <li>ONGs locais dependem majoritariamente de doações individuais</li>
             <li>Muitas pessoas querem doar, mas não sabem por onde começar</li>
@@ -17,17 +15,18 @@
         </ul>
 
         <div class="button-group">
-            <a asp-action="FacaUmaDoacao" class="btn-custom">Fazer Doação</a>
-            <a asp-action="PrecisaDeDoacao" class="btn-custom">Receber Doação</a>
+            @* Botão Fazer Doação *@
+            <a asp-controller="Home" asp-action="FacaUmaDoacao" class="btn-custom">Fazer Doação</a>
+    
+            @* Botão Receber Doação (Abre a tela cinza) *@
+            <a asp-controller="Home" asp-action="PrecisaDeDoacao" class="btn-custom">Receber Doação</a>
         </div>
     </div>
 
     <div class="map-placeholder">
         <h3 class="map-title">Encontre uma instituição perto de você!</h3>
-        
-        @* Placeholder visual para o mapa *@
         <div class="map-box">
-            <p>[ANÁLISE]</p>
+            <p>[MAPA CARREGANDO]</p>
         </div>
     </div>
 </div>
