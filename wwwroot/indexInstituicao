@@ -1,0 +1,647 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f2f2f2;
+  color: #333;
+}
+
+/* ======================================================= */
+/* Topbar */
+.topbar {
+  background: #18b07c;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  color: #fff;
+}
+
+/* ======================================================= */
+/* Logo */
+.logo { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  font-size: 11px; 
+  font-weight: 700; 
+  line-height: 1.3; 
+}
+
+.logo img { 
+  height: 36px; 
+  width: auto; 
+}
+
+/* ======================================================= */
+/* Logout */
+
+.btn-logout {
+  background: #fff; 
+  border: none; 
+  border-radius: 8px;
+  width: 36px; 
+  height: 36px; 
+  font-size: 16px; 
+  cursor: pointer; 
+  color: #18b07c;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover { 
+  background: #14a070; 
+  color: #fff; 
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+
+}
+.btn-logout:active { transform: scale(0.95); }
+
+/* ======================================================= */
+/* Seção do topo */
+
+.top-section { 
+  position: relative; 
+  background: #dcdcdc; 
+  height: 200px; display: flex; 
+  align-items: flex-end; 
+  overflow: hidden; 
+}
+
+.top-section-titulo { 
+  position: absolute; 
+  background: #f2f2f2; 
+  padding: 22px 36px 12px 40px; 
+  border-radius: 0 14px 0 0;
+ }
+
+.top-section-titulo h1 { 
+  font-size: 28px; 
+  font-weight: 800; 
+  padding-bottom: 8px; 
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+}
+
+.top-section-titulo p { 
+color: #888; 
+margin-top: 4px; 
+}
+
+.section-decoracao { 
+  position: absolute; 
+  inset: 0; 
+  pointer-events: none; 
+}
+
+.figura { position: absolute; }
+
+.semi-circulo { 
+  right: 50px; 
+  bottom: -30px; 
+  width: 210px; 
+  height: 105px; 
+  background: #c01d36; 
+  border-radius: 155px 155px 0 0; 
+  transform: rotate(195deg); 
+}
+
+.circulo-listrado { 
+  right: 200px; 
+  bottom: -90px; 
+  width: 200px; 
+  height: 200px; 
+  border-radius: 50%; 
+  background: repeating-linear-gradient(90deg, #f1ad0c 0px, #f1ad0c 7px, transparent 7px, transparent 14px); 
+}
+
+.circulo { 
+  right: -80px;
+  bottom: -80px; 
+  width: 210px; 
+  height: 210px; 
+  background: #8e24aa; 
+  border-radius: 50%; 
+}
+
+.gradiente-pontos { 
+  right: 0px;
+  bottom: -20px; 
+  width: 250px; 
+  height: 120px; 
+  background-image: radial-gradient(circle, #111 1.8px, transparent 2.4px); 
+  background-size: 16px 16px; 
+}
+
+
+/* ======================================================= */
+/* Container */
+
+.container { 
+  max-width: 1400px; 
+  margin: 0 auto;
+  padding: 28px 40px 50px;
+  display: flex; 
+  flex-direction: column; 
+  gap: 24px; 
+}
+
+.grid { 
+  display: grid; 
+  grid-template-columns: 1.2fr 1.3fr; 
+  gap: 24px; 
+  align-items: stretch; 
+}
+
+/* ======================================================= */
+/* Card */
+
+.card { 
+  background: #fff; 
+  border-radius: 14px; 
+  padding: 24px; 
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06); 
+  display: flex; 
+  flex-direction: column; 
+  margin-bottom: 24px; 
+}
+
+.card.selecao-campanha { height: 250px; }
+
+.card.historico-campanhas { 
+  margin-top: -140px; 
+  height: 450px; 
+}
+
+.card.historico-doacoes { 
+  margin-top: -30px; 
+  height: 340px; 
+}
+
+.subtitulo { 
+  font-size: 14px; 
+  color: #999; 
+  margin-bottom: 16px; 
+  padding-top: 8px; 
+  border-top: 1px solid rgba(0,0,0,0.15); 
+  margin-top: 8px; 
+  width: 80%; 
+}
+
+
+
+/* ======================================================= */
+/* Conteúdo card - Seleção/Registro de Campanha */
+
+select { 
+  width: 100%; 
+  padding: 11px 14px; 
+  border-radius: 10px; 
+  border: 1.5px solid #ddd; 
+  font-size: 14px; 
+  margin-top: 6px; 
+  appearance: none; 
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 14px center;
+}
+
+.ou { 
+  text-align: center; 
+  color: #bbb; 
+  margin: 14px 0 10px; 
+}
+
+.btn-Modal { 
+  display: block; 
+  width: 100%; 
+  padding: 13px; 
+  border: none; 
+  border-radius: 10px; 
+  background: #17b37e; 
+  color: #fff; 
+  font-size: 15px; 
+  font-weight: 700; 
+  cursor: pointer; 
+  margin-top: 6px; 
+  text-align: center;
+  text-decoration: none; 
+}
+
+.btn-Modal:hover { background: #14a070; }
+
+/* ======================================================= */
+/* Conteúdo card - Progresso de Campanha */
+
+.progresso-linha { 
+  display: flex; 
+  gap: 50px; 
+  align-items: flex-start; 
+  margin-top: 8px; 
+}
+
+.coluna-total { 
+  flex-shrink: 0; 
+  text-align: center; 
+}
+
+.graficoTotal-container { 
+  position: relative; 
+  width: 180px; 
+  height: 110px;
+  margin: 10px auto; 
+}
+
+.porcentagemTotal-numero { 
+  position: absolute; 
+  inset: 0; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 20px; 
+  font-weight: 800; 
+}
+
+.Legenda { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+  font-size: 16px; 
+  font-weight: bold;
+  text-align: left; 
+  margin-left: 15px;
+  margin-top: 36px; 
+}
+
+.LegendaProgresso { 
+  display: inline-block;
+  width: 11px; 
+  height: 11px; 
+  border-radius: 50%; 
+  margin-right: 5px; 
+}
+
+.LegendaProgresso.Pendente  { background: #f3b5b5; }
+.LegendaProgresso.Concluido { background: #c62828; }
+
+
+.coluna-categorias { flex: 1; }
+
+.categoria { margin-bottom: 14px; }
+
+.categoria p { 
+  font-size: 14px; 
+  font-weight: 600; 
+  margin-bottom: 3px; 
+}
+
+.categoria small { 
+  font-size: 11px; 
+  color: #888; 
+}
+
+.barra-linha { 
+  display: flex; 
+  align-items: center;
+  gap: 8px; 
+  margin-top: 5px; 
+}
+
+.barra-fundo { 
+  flex: 1; 
+  height: 11px; 
+  background: #f0e3a2; 
+  border-radius: 20px; 
+}
+
+.barra-preenchimento { 
+  height: 100%; 
+  background: #f4a300;
+  border-radius: 20px;
+  width: 0; 
+  transition: width 0.7s ease; 
+}
+
+.barra-pct { 
+  font-size: 12px; 
+  font-weight: 700; 
+  white-space: nowrap; 
+  min-width: 34px; 
+  text-align: right; 
+}
+
+/* ======================================================= */
+/* Conteúdo card - tabela - Histórico de Campanhas */
+
+.scroll-tabela { 
+  height: 280px; 
+  overflow-y: auto; 
+  margin-top: 12px; 
+  border-radius: 10px; 
+}
+
+table {
+  width: 100%; 
+  border-collapse: collapse; 
+  font-size: 14px;
+}
+
+thead { 
+  position: sticky; 
+  top: 0; 
+}
+
+th { 
+  background: #17b37e; 
+  color: #fff; 
+  padding: 11px 14px; 
+  text-align: left; 
+  font-size: 13px; 
+}
+
+td { 
+  padding: 11px 20px; 
+  border-bottom: 1px solid #f0f0f0; 
+  color: #444; 
+}
+
+.status { 
+  display: inline-block; 
+  padding: 4px 10px; 
+  border-radius: 20px; 
+  font-size: 12px; 
+  font-weight: 600; 
+}
+.status.concluido  { 
+  background: #d4f5e9; 
+  color: #0a8f5c; 
+}
+
+.status.pendente { 
+  background: #ffe6c2; 
+  color: #c77a00; 
+}
+
+.status.planejado  { 
+  background: #ede4f8; 
+  color: #6a1b9a; 
+}
+
+/* ======================================================= */
+/* Conteúdo card - Histórico de doações */ 
+
+.scroll-doacoes {
+  height: 300px; 
+  overflow-y: auto; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+  margin-top: 8px; 
+}
+
+.doacao { 
+  display: flex; 
+  gap: 12px; 
+}
+
+.doacao-id { 
+  background: #8e24aa; 
+  color: #fff; 
+  font-size: 12px; 
+  font-weight: 700; 
+  border-radius: 10px; 
+  min-width: 115px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  padding: 10px 8px; 
+  text-align: center; 
+  flex-shrink: 0; 
+}
+
+.doacao-info { 
+  background: #f5f5f5; 
+  border-radius: 10px; 
+  padding: 10px 14px; 
+  flex: 1; 
+  font-size: 13px; 
+  line-height: 1.6; 
+}
+
+
+/* ======================================================= */
+/* Modal (Registro de Campanha, invisível por padrão) */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-overlay:target {
+  display: flex;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  overflow: hidden;
+}
+
+/* Cabeçalho */
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 22px 26px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  flex-shrink: 0;
+}
+
+.modal-header h2 { 
+  font-size: 19px;
+  font-weight: 800; 
+  color: #1a1a1a; 
+  margin-bottom: 3px; 
+}
+
+.modal-subtitulo { 
+  font-size: 13px; 
+  color: #999; 
+}
+
+.modal-fechar {
+  background: #f2f2f2; 
+  border-radius: 8px; 
+  width: 32px; 
+  height: 32px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 14px; 
+  color: #666; 
+  text-decoration: none; 
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.modal-fechar:hover { 
+  background: #e0e0e0; 
+  color: #333; }
+
+
+/* Corpo */
+
+.modal-corpo {
+  padding: 18px 26px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Seção */
+
+.modal-secao { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+}
+
+.modal-secao-label { 
+  font-size: 11px; 
+  font-weight: 700; 
+  text-transform: uppercase; 
+  letter-spacing: 0.08em; 
+  color: #18b07c; 
+  border-bottom: 1.5px solid rgba(24,176,124,0.15); padding-bottom: 5px; 
+}
+
+.modal-hint { 
+  font-weight: 400; 
+  color: #bbb; 
+  text-transform: none; 
+  letter-spacing: 0; 
+}
+
+/* Grid de campos */
+
+.modal-grid { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 10px; 
+}
+
+.campo { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 5px; 
+  flex: 1; 
+  min-width: 130px; 
+}
+
+.campo.largo  { flex: 2; min-width: 200px; }
+
+.campo.medio  { flex: 1.5; min-width: 150px; }
+
+.campo.pequeno{ flex: 0 0 110px; }
+
+.campo label { 
+  font-size: 12px; 
+  font-weight: 600; 
+  color: #555; 
+}
+
+.obrigatorio { color: #c62828; }
+
+/* Inputs do modal */
+.modal-corpo input,
+.modal-corpo select,
+.modal-corpo textarea {
+  padding: 9px 12px;
+  border-radius: 9px;
+  border: 1.5px solid #ddd;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-corpo input:focus,
+.modal-corpo select:focus,
+.modal-corpo textarea:focus {
+  outline: none;
+  border-color: #18b07c;
+  box-shadow: 0 0 0 3px rgba(24,176,124,0.12);
+}
+
+.modal-corpo textarea { resize: vertical; min-height: 68px; }
+
+/* Categoria */
+
+.categoria-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1.5px solid #eee;
+}
+
+/* Rodapé */
+.modal-rodape {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 26px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  flex-shrink: 0;
+  background: #fafafa;
+}
+
+.btn-cancelar { 
+  background: none; 
+  border: 1.5px solid #ddd; 
+  border-radius: 10px; 
+  padding: 10px 20px; 
+  font-size: 14px; 
+  font-weight: 600; 
+  color: #666; 
+  cursor: pointer; 
+  text-decoration: none; 
+  display: flex; 
+  align-items: center; 
+  transition: border-color 0.2s; }
+
+.btn-cancelar:hover { border-color: #bbb; color: #333; }
+
+.btn-registrar { width: auto; margin-top: 0; padding: 10px 24px; font-size: 14px; }
+
+
+/* ======================================================= */
+/* Responsividade */
+@media (max-width: 820px) {
+  .grid { grid-template-columns: 1fr; }
+  .container { padding: 20px 18px 40px; }
+  .progresso-linha { flex-direction: column; align-items: center; }
+  .coluna-categorias { width: 100%; }
+}
+@media (max-width: 560px) {
+  .modal { border-radius: 14px; }
+  .modal-header, .modal-corpo, .modal-rodape { padding-left: 16px; padding-right: 16px; }
+  .campo.pequeno { flex: 1; }
+}
