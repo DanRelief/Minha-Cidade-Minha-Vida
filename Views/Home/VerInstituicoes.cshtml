@@ -1,0 +1,113 @@
+﻿@model List<MCMV.Models.UserViewModel>
+
+@{
+    ViewData["Title"] = "Instituições Cadastradas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-pesquisa">
+    @* Barra de Pesquisa Estilizada *@
+    <div class="search-bar-container">
+        <div class="search-bar">
+            <input type="text" id="inputPesquisa" placeholder="Pesquisar Instituição" />
+            <button type="button" class="search-icon">
+                <i class="fas fa-search"></i> @* Certifique-se de ter FontAwesome ou use uma 🔍 *@
+                🔍
+            </button>
+        </div>
+    </div>
+
+    @* Grid de Instituições *@
+    <div class="instituicoes-grid">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var inst in Model)
+            {
+                <div class="instituicao-item">
+                    <p class="inst-nome"><strong>@inst.Nome</strong></p>
+                    <p>CNPJ: @inst.Documento</p>
+                    <div class="inst-detalhes">
+                        <span>Bairro: ---</span>
+                        <span>Avaliação: 5/5</span>
+                    </div>
+                    <div class="inst-endereco">
+                        <span>Rua: ---</span>
+                        <span>Nº: ---</span>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Nenhuma instituição encontrada.</p>
+        }
+    </div>
+</div>
+
+<style>
+    /* Centralização da Barra de Pesquisa */
+    .search-bar-container {
+        display: flex;
+        justify-content: center;
+        margin: 40px 0;
+    }
+
+    .search-bar {
+        background-color: #00C08B; /* Verde do seu protótipo */
+        border-radius: 50px;
+        padding: 10px 30px;
+        display: flex;
+        align-items: center;
+        width: 60%;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .search-bar input {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 20px;
+        width: 100%;
+        outline: none;
+    }
+
+    .search-bar input::placeholder {
+        color: rgba(255,255,255,0.8);
+    }
+
+    .search-icon {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    /* Grid de 4 Colunas como na imagem */
+    .instituicoes-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4 colunas iguais */
+        gap: 30px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .instituicao-item {
+        font-family: sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .inst-nome {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .inst-detalhes, .inst-endereco {
+        display: flex;
+        justify-content: space-between;
+    }
+
+</style>

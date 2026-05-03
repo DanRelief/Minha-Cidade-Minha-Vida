@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using MCMV.Data;
-
+using MCMV.Models;
+    
 namespace MCMV.Logical
 {
     public class RegisterService
@@ -46,6 +47,35 @@ namespace MCMV.Logical
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        public List<UserViewModel> ListarInstituicoes()
+        {
+            var lista = new List<UserViewModel>();
+
+            using (var conn = _db.GetConnection())
+            {
+                conn.Open();
+
+                const string sql = "SELECT usuario, documento FROM user_tb WHERE LENGTH(documento) = 14";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new UserViewModel
+                            {
+                                // Certifique-se que os nomes aqui batem com o SELECT
+                                Nome = reader["usuario"].ToString() ?? "",
+                                Documento = reader["documento"].ToString() ?? ""
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
         }
     }
 }

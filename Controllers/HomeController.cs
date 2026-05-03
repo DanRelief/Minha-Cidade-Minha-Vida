@@ -148,6 +148,15 @@ namespace MCMV.Controllers
 
         public IActionResult IndexInstituicao() => View();
 
+        public IActionResult VerInstituicoes()
+        {
+            // Busca a lista no serviço
+            var instituicoes = _registerService.ListarInstituicoes();
+
+            // Envia a lista para a View
+            return View(instituicoes);
+        }
+
 
         [HttpGet]
         public IActionResult PrecisaDeDoacao()

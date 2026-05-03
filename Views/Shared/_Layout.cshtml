@@ -97,20 +97,29 @@
     
         <div class="navbar-custom">
             <nav>
-                <div class="navbar-custom">
-                    <nav>
-                        <a asp-controller="Home" asp-action="IndexUsuario" class="active-link">Página inicial</a>
-                        <a href="#">Instituições cadastradas</a>
+                @* Link para Página Inicial *@
+                <a asp-controller="Home" asp-action="IndexUsuario"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "IndexUsuario" ? "active-link" : "")">
+                    Página inicial
+                </a>
+
+                @* CORREÇÃO AQUI: Link para Instituições Cadastradas *@
+                <a asp-controller="Home" asp-action="VerInstituicoes"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "VerInstituicoes" ? "active-link" : "")">
+                    Instituições cadastradas
+                </a>
         
-                        @* Corrigido: Agora aponta para a tela cinza de solicitação *@
-                        <a asp-controller="Home" asp-action="PrecisaDeDoacao">Precisa de doação?</a>
+                <a asp-controller="Home" asp-action="PrecisaDeDoacao"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "PrecisaDeDoacao" ? "active-link" : "")">
+                    Precisa de doação?
+                </a>
 
-                        @* Corrigido: Aponta para a tela de fazer doação *@
-                        <a asp-controller="Home" asp-action="FacaUmaDoacao">Faça uma doação</a>
+                <a asp-controller="Home" asp-action="FacaUmaDoacao"
+                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "FacaUmaDoacao" ? "active-link" : "")">
+                    Faça uma doação
+                </a>
 
-                        <a href="#">Portal da transparência</a>
-                    </nav>
-                </div>
+                <a href="#">Portal da transparência</a>
             </nav>
         </div>
     </header>
