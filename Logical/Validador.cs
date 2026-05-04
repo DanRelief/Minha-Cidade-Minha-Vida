@@ -9,12 +9,12 @@ namespace MCMV.Logical
         {
             if (string.IsNullOrWhiteSpace(documento)) return false;
 
-            // Remove qualquer máscara (pontos, traços) e deixa só números
+            // Remove máscara: "33.208.204/0001-41" vira "33208204000141" (14 caracteres)
             var apenasDigits = new string(documento.Where(char.IsDigit).ToArray());
 
             if (string.IsNullOrWhiteSpace(apenasDigits)) return false;
 
-            // Validação de CPF
+            // Validação de CPF (11 dígitos)
             if (apenasDigits.Length == 11)
             {
                 if (apenasDigits.Distinct().Count() == 1) return false;
@@ -35,7 +35,7 @@ namespace MCMV.Logical
                 return nums[10] == dv2;
             }
 
-            // Validação de CNPJ
+            // CORREÇÃO AQUI: Validação de CNPJ deve ser 14 dígitos após a limpeza
             if (apenasDigits.Length == 14)
             {
                 if (apenasDigits.Distinct().Count() == 1) return false;

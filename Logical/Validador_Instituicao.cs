@@ -19,15 +19,26 @@ namespace MCMV.Logical
             if (cnpj.Length != 14)
                 return false;
 
-            var response = await http.GetAsync($"osc?ft_identificador_osc={cnpj}");
-            if (!response.IsSuccessStatusCode)
+            try
+            {
+                var response = await http.GetAsync($"osc?ft_identificador_osc={cnpj}");
+
+                if (!response.IsSuccessStatusCode)
+                    return false;
+
+                var json = await response.Content.ReadAsStringAsync();
+
+                using var resultado = JsonDocument.Parse(json);
+                var root = resultado.RootElement;
+
+                return root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0;
+            }
+            catch
+            {
+                // Em caso de erro na API (timeout ou fora do ar), você decide se barra 
+                // ou se permite o cadastro. Aqui retornaremos false para segurança.
                 return false;
-
-            var json = await response.Content.ReadAsStringAsync();
-            var resultado = JsonSerializer.Deserialize<JsonElement>(json);
-
-            return resultado.ValueKind == JsonValueKind.Array &&
-                   resultado.GetArrayLength() > 0;
+            }
         }
     }
 }

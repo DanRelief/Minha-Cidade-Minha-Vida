@@ -19,150 +19,77 @@ namespace MCMV.Controllers
             _donationService = donationService;
         }
 
-        // Login
+        // --- LOGIN ---
         [HttpGet]
         public IActionResult Login() => View();
 
         [HttpPost]
         public IActionResult Login(string documento, string senha)
         {
-            bool valido = _loginService.ValidarLogin(documento, senha);
+            if (string.IsNullOrEmpty(documento))
+            {
+                ViewBag.Erro = "Por favor, preencha o campo de documento.";
+                return View();
+            }
+
+            string docLimpo = new string(documento.Where(char.IsDigit).ToArray());
+
+            bool valido = _loginService.ValidarLogin(docLimpo, senha);
 
             if (valido)
             {
-                string tipo = _loginService.ObterTipoUsuario(documento);
-
-                if (tipo == "CPF")
-                {
-                    return RedirectToAction("IndexUsuario");
-                }
-                else if (tipo == "CNPJ")
-                {
-                    return RedirectToAction("IndexInstituicao");
-                }
+                string tipo = _loginService.ObterTipoUsuario(docLimpo);
+                return tipo == "CPF" ? RedirectToAction("IndexUsuario") : RedirectToAction("IndexInstituicao");
             }
 
             ViewBag.Erro = "CPF/CNPJ ou senha inválidos";
             return View();
         }
 
-        //Cadastro
+        // --- CADASTRO ---
         [HttpGet]
         public IActionResult Cadastro() => View();
-
-    // Para inserir os dados recebidos do cadastro 
-    [HttpPost]
-    public async Task<IActionResult> Cadastro(string user, string identific, bool isInstit, string email, string senha, string confirmarSenha, IFormFile documentoInstituicao)
-    {
-        // Validação de E-mail
-        string padraoEmail = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-        if (!Regex.IsMatch(email ?? "", padraoEmail))
+        public async Task<IActionResult> Cadastro(string user, string identific, bool isInstit, string email, string senha, string confirmarSenha, IFormFile documentoInstituicao)
         {
-            ViewBag.Erro = "E-mail inválido!";
-            return View("Cadastro");
-        }
+            // 1. Limpeza radical: remove tudo que não for número
+            string docLimpo = new string(identific.Where(char.IsDigit).ToArray());
 
-        // Validação de Senha
-        if (senha != confirmarSenha)
-        {
-            ViewBag.Erro = "As senhas não coincidem!";
-            return View("Cadastro");
-        }
-
-        // Validação de CPF ou CNPJ
-        if (!Validador.ValidarDocumento(identific))
-        {
-            ViewBag.Erro = "CPF ou CNPJ inválido!";
-            return View("Cadastro");
-        }
-
-
-
-        bool instituicaoVerificada = false;
-
-
-        if (isInstit && identific.Length == 14)
-        {
-            // Tentativa 1: API
-            try
+            // 2. Validação simplificada de tamanho (CPF=11, CNPJ=14)
+            if (docLimpo.Length != 11 && docLimpo.Length != 14)
             {
-                instituicaoVerificada =
-                    await Validador_Instituicao.VerificarInstituicao(identific);
-            }
-            catch
-            {
-                // API falhou → ignora
-                instituicaoVerificada = false;
+                ViewBag.Erro = "O documento deve ter 11 dígitos (CPF) ou 14 dígitos (CNPJ).";
+                return View("Cadastro");
             }
 
-            // Tentativa 2: Documento enviado
-            if (!instituicaoVerificada &&
-                documentoInstituicao != null &&
-                documentoInstituicao.Length > 0)
+            // 3. Forçar sempre como True (conforme solicitado)
+            bool instituicaoVerificada = true;
+
+            // 4. Verificar duplicidade e salvar
+            if (_registerService.UsuarioExiste(docLimpo))
             {
-                instituicaoVerificada = true;
-            }
-        }
-
-
-
-
-
-        // Verifica se o documento de usuário escolhido já existe no banco de dados para evitar duplicidade.
-        if (_registerService.UsuarioExiste(identific))
-        {
-            ViewBag.Erro = "Este usuário já está em uso.";
-            return View("Cadastro");
-        }
-
-        // Se todas as validações passaram, cria o novo usuário no banco de dados.
-        _registerService.CriarUsuario(user, senha, email, identific, instituicaoVerificada);
-
-        if (isInstit)
-        {
-            if (instituicaoVerificada)
-            {
-                ViewBag.Mensagem =
-                    "Analisamos seu CNPJ e o Documento Enviado e você é uma Instituição Verificada de Confiança!";
-                ViewBag.Tipo = "sucesso";
-            }
-            else
-            {
-                ViewBag.Mensagem =
-                    "Analisamos seu CNPJ e não encontramos a sua Instituição no Mapa OSC para Verificação de Conta.";
-                ViewBag.Tipo = "aviso";
+                ViewBag.Erro = "Este CPF ou CNPJ já está cadastrado.";
+                return View("Cadastro");
             }
 
-            return View("Login");
-        }
+            _registerService.CriarUsuario(user, senha, email, docLimpo, instituicaoVerificada);
 
-        //  mensagem de sucesso para o usuário após o cadastro, informando que ele pode fazer login.            
-        TempData["MensagemSucesso"] = "Usuário criado com sucesso! Faça login para continuar.";
-
-            TempData["MensagemSucesso"] = "Usuário criado com sucesso!";
+            TempData["MensagemSucesso"] = "Cadastro realizado com sucesso!";
             return RedirectToAction("Login");
         }
 
-        //tela inicial
+        // --- OUTRAS ROTAS ---
         public IActionResult IndexUsuario() => View();
 
         public IActionResult IndexInstituicao() => View();
 
         public IActionResult VerInstituicoes()
         {
-            // Busca a lista no serviço
             var instituicoes = _registerService.ListarInstituicoes();
-
-            // Envia a lista para a View
             return View(instituicoes);
         }
 
-
         [HttpGet]
-        public IActionResult PrecisaDeDoacao()
-        {
-            return View();
-        }
+        public IActionResult PrecisaDeDoacao() => View();
 
         [HttpPost]
         public IActionResult EnviarSolicitacao(SolicitacaoDoacao solicitacao)
@@ -170,19 +97,14 @@ namespace MCMV.Controllers
             if (ModelState.IsValid)
             {
                 _donationService.SalvarSolicitacao(solicitacao);
-
                 TempData["MensagemSucesso"] = "Solicitação enviada com sucesso!";
                 return RedirectToAction("IndexUsuario");
             }
-
             return View("PrecisaDeDoacao", solicitacao);
         }
 
         [HttpGet]
-        public IActionResult FacaUmaDoacao()
-        {
-            return View();
-        }
+        public IActionResult FacaUmaDoacao() => View();
 
         [HttpPost]
         public IActionResult EnviarDoacao(FazerUmaDoacao doacao)
@@ -190,11 +112,9 @@ namespace MCMV.Controllers
             if (ModelState.IsValid)
             {
                 _donationService.SalvarOfertaDoacao(doacao);
-
                 TempData["MensagemSucesso"] = "Oferta de doação enviada com sucesso!";
                 return RedirectToAction("IndexUsuario");
             }
-
             return View("FacaUmaDoacao", doacao);
         }
     }

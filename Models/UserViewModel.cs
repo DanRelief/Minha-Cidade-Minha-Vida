@@ -2,8 +2,8 @@
 {
     public class UserViewModel
     {
-        public string Nome { get; set; }
-        public string Documento { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string Documento { get; set; } = string.Empty;
     }
 }
 

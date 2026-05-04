@@ -29,8 +29,9 @@ namespace MCMV.Logical
             }
         }
 
-        public void CriarUsuario(string user, string senha, string email, string doc, bool instituicaoVerificada)
+        public void CriarUsuario(string user, string senha, string? email, string doc, bool instituicaoVerificada)
         {
+            string emailTratado = email ?? "nao-informado@email.com";
             using (var con = _db.GetConnection())
             {
                 con.Open();

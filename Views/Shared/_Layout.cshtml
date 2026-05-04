@@ -97,29 +97,43 @@
     
         <div class="navbar-custom">
             <nav>
-                @* Link para Página Inicial *@
-                <a asp-controller="Home" asp-action="IndexUsuario"
-                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "IndexUsuario" ? "active-link" : "")">
+                @{
+                    // 1. Detecta a Action atual para marcar o botão "Active"
+                    var actionAtual = ViewContext.RouteData.Values["Action"]?.ToString();
+
+                    // 2. Lógica para o link da Home (ajusta conforme o tipo de usuário)
+                    var linkHome = (actionAtual == "IndexInstituicao") ? "IndexInstituicao" : "IndexUsuario";
+                }
+
+                @* Link Dinâmico para Página Inicial *@
+                <a asp-controller="Home" asp-action="@linkHome"
+                       class="@(actionAtual == "IndexUsuario" || actionAtual == "IndexInstituicao" ? "active-link" : "")">
                     Página inicial
                 </a>
 
-                @* CORREÇÃO AQUI: Link para Instituições Cadastradas *@
+                @* Instituições *@
                 <a asp-controller="Home" asp-action="VerInstituicoes"
-                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "VerInstituicoes" ? "active-link" : "")">
+                       class="@(actionAtual == "VerInstituicoes" ? "active-link" : "")">
                     Instituições cadastradas
                 </a>
-        
+
+                @* Precisa de Doação *@
                 <a asp-controller="Home" asp-action="PrecisaDeDoacao"
-                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "PrecisaDeDoacao" ? "active-link" : "")">
+                       class="@(actionAtual == "PrecisaDeDoacao" ? "active-link" : "")">
                     Precisa de doação?
                 </a>
 
+                @* Faça uma Doação *@
                 <a asp-controller="Home" asp-action="FacaUmaDoacao"
-                       class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "FacaUmaDoacao" ? "active-link" : "")">
+                       class="@(actionAtual == "FacaUmaDoacao" ? "active-link" : "")">
                     Faça uma doação
                 </a>
 
+                @* Portal (Link fixo) *@
                 <a href="#">Portal da transparência</a>
+        
+                @* DICA: Adicione um link de Sair para testar o deslogue *@
+                <a asp-controller="Home" asp-action="Login">Sair</a>
             </nav>
         </div>
     </header>

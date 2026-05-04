@@ -38,7 +38,7 @@
 
                         @* Este label e input mudam dinamicamente entre CPF e CNPJ via JavaScript abaixo *@
                         <label id="labelIdentific" for="identific">CPF:</label>
-                        <input type="text" id="identific" name="identific" maxlength="14" required>
+                        <input type="text" id="identific" name="identific" maxlength="18" required>
 
                         <div class="checkbox-area">
                             @* Checkbox para indicar se o usuário é pessoa física ou uma Instituição *@
@@ -76,38 +76,43 @@
                 </div>
             </div>
 
-        <script>
-                const checkbox = document.getElementById("isInstit");
-                const label = document.getElementById("labelIdentific");
-                const inputIdentific = document.getElementById("identific");
-                const uploadArea = document.getElementById("uploadArea");
+    <script>
+            const checkbox = document.getElementById("isInstit");
+            const label = document.getElementById("labelIdentific");
+            const inputIdentific = document.getElementById("identific");
+            const uploadArea = document.getElementById("uploadArea");
 
-                const fileInput = document.getElementById("documentoInstituicao");
-                const fileText = document.getElementById("fileText");
+            const fileInput = document.getElementById("documentoInstituicao");
+            const fileText = document.getElementById("fileText");
 
-                if (fileInput && fileText) {
-                    fileInput.addEventListener("change", () => {
-                        fileText.textContent =
-                            fileInput.files.length > 0
-                                ? fileInput.files[0].name
-                                : "Selecionar arquivo";
-                    });
+            // Lógica do texto do arquivo
+            if (fileInput && fileText) {
+                fileInput.addEventListener("change", () => {
+                    fileText.textContent =
+                        fileInput.files.length > 0
+                            ? fileInput.files[0].name
+                            : "Selecionar arquivo";
+                });
+            }
+
+            // Lógica de alternância CPF/CNPJ
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    label.innerText = "CNPJ:";
+                    // CNPJ com máscara tem 18 caracteres. Deixe 18 para evitar cortes.
+                    inputIdentific.maxLength = 18;
+                    uploadArea.style.display = "block";
+                } else {
+                    label.innerText = "CPF:";
+                    // CPF com máscara tem 14 caracteres (000.000.000-00).
+                    // Se deixar 11, ele corta os pontos. Use 14 ou 18 para segurança.
+                    inputIdentific.maxLength = 14;
+                    uploadArea.style.display = "none";
+                    if (fileText) fileText.textContent = "Selecionar arquivo";
                 }
 
-                checkbox.addEventListener("change", () => {
-                    if (checkbox.checked) {
-                        label.innerText = "CNPJ:";
-                        inputIdentific.maxLength = 14;
-                        uploadArea.style.display = "block";
-                    } else {
-                        label.innerText = "CPF:";
-                        inputIdentific.maxLength = 11;
-                        uploadArea.style.display = "none";
-                        if (fileText) fileText.textContent = "Selecionar arquivo";
-                    }
-
-                    inputIdentific.value = "";
-                });
-        </script>
+                inputIdentific.value = ""; // Limpa para evitar confusão de formatos
+            });
+    </script>
         </body>
     </html>
