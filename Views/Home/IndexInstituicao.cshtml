@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<MCMV.Models.CampanhaModel>
+
+@{
     ViewData["Title"] = "Página Inicial - Minha Cidade, Minha Vida";
 
     // ✅ Não use Peek aqui (senão “vaza” pra outras páginas)
@@ -57,43 +59,66 @@
 
     <div class="grid">
 
-      <!-- Seleção de Campanha -->
+            <!-- Seleção de Campanha -->
+            <div class="card selecao-campanha">
+                <p>Selecione a campanha:</p>
 
-      <div class="card selecao-campanha">
-        <p>Selecione a campanha:</p>
-
-        <!-- Seleção de Campanha -->
-        <select id="selectCampanha"></select>
+                <!-- Seleção de Campanha Dinâmica -->
+                <select id="selectCampanha" class="form-control">
+                    <option value="">-- Selecione uma campanha --</option>
         
-        <p class="ou">Ou</p>
-        <p>Registre uma nova campanha:</p>
-        <a href="#modal-campanha" class="btn-Modal">Registrar</a>
-      </div>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var campanha in Model)
+                        {
+                            <option value="@campanha.Id">@campanha.Nome</option>
+                        }
+                    }
+                </select>
+    
+                <p class="ou">Ou</p>
+                <p>Registre uma nova campanha:</p>
+                <a href="#modal-campanha" class="btn-Modal">Registrar</a>
+            </div>
 
       <!-- Progresso de Campanha -->
-
-      <div class="card progresso-campanha">
-        <h2>Progresso da Campanha</h2>
-        <p class="subtitulo">Acompanhe o progresso da campanha</p>
-        <div class="progresso-linha">
-          <div class="coluna-total">
-            <p><strong>Total</strong></p>
-            <div class="graficoTotal-container">
-              
-              <!-- Gráfico em anel -->
-              <canvas id="graficoTotal-circular" width="110" height="110"></canvas> 
-
-              <!-- Porcentagem -->
-              <span class="porcentagemTotal-numero" id="total-porcentagem"></span>
-
-            </div>
+            <div class="card progresso-campanha">
+                <h2>Progresso da Campanha</h2>
+                <p class="subtitulo">Acompanhe o progresso da campanha</p>
+    
+                <div class="progresso-linha">
+                    <div class="coluna-total">
+                        <p><strong>Total Geral</strong></p>
+                        <div class="graficoTotal-container">
+                            <canvas id="graficoCampanha"></canvas>
+                            <span class="porcentagemTotal-numero" id="total-porcentagem">0%</span>
+                        </div>
             
-            <div class="Legenda">
-              <span><span class="LegendaProgresso Pendente"></span> Pendente</span>
-              <span><span class="LegendaProgresso Concluido"></span> Concluído</span>
-            </div>
-          </div>
+                        <div class="Legenda">
+                            <span><span class="LegendaProgresso Concluido"></span> Concluído</span>
+                            <span><span class="LegendaProgresso Pendente"></span> Pendente</span>
+                        </div>
 
+                        <div style="margin-top: 15px;">
+                            <button type="button" id="btnTestarGrafico" class="btn-Modal" style="background: #333; font-size: 11px; padding: 5px 10px; width: 100%;">
+                                Simular 100% (Teste)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="coluna-categorias" id="listaCategoriasContainer">
+                        <p><strong>Por categoria</strong></p>
+                        <div id="listaCategorias">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <button type="button" id="btnTestarGrafico" class="btn-Modal" style="background: #333; font-size: 12px; padding: 8px;">
+                    Simular 100% (Teste)
+                </button>
+            </div>
 
           <div class="coluna-categorias">
            <p><strong>Por categoria</strong></p>
@@ -123,7 +148,32 @@
             </thead>
 
             <!-- Tabela das campanhas registradas -->
-            <tbody id="tabelaCampanhas"></tbody>
+            <tbody id="tabelaCampanhas">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var campanha in Model)
+                    {
+                        <tr>
+                            <td>@campanha.Nome</td>
+                            <td>@campanha.DataInicio.ToString("dd/MM/yyyy")</td>
+                            <td>@campanha.DataFim.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @{
+                                    var status = campanha.DataFim < DateTime.Now ? "CONCLUÍDO" : "NÃO CONCLUÍDO";
+                                    var classeStatus = campanha.DataFim < DateTime.Now ? "status-concluido" : "status-pendente";
+                                }
+                                <span class="@classeStatus">@status</span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" style="text-align:center">Nenhuma campanha registrada.</td>
+                    </tr>
+                }
+            </tbody>
 
           </table>
         </div>
@@ -234,8 +284,7 @@
       </div>
 
       <!-- action e method -->
-
-      <form class="modal-corpo" method="post" action="">
+           <form class="modal-corpo" method="post" asp-controller="Home" asp-action="RegistrarCampanha">
 
         <!-- Identificação da campanha -->
 
@@ -395,32 +444,6 @@
        
    document.addEventListener('DOMContentLoaded', function () {
 
-  /* Gráfico Circular */
-  /* Desenha o gráfico na interface */
-
-  var porcentagem; // Porcentagem que será exibida no gráfico
-  var canvas = document.getElementById('graficoTotal-circular');
-  var ctx = canvas.getContext('2d');
-  var cx = canvas.width / 2, cy = canvas.height / 2;
-  var inicio = -Math.PI / 2;
-
-  ctx.beginPath();
-  ctx.arc(cx, cy, 42, 0, 2 * Math.PI);
-  ctx.strokeStyle = '#f3b5b5'; ctx.lineWidth = 14; ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(cx, cy, 42, inicio, inicio + (2 * Math.PI * porcentagem / 100));
-  ctx.strokeStyle = '#c62828'; ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.stroke();
-
-  document.getElementById('total-porcentagem').textContent = porcentagem + '%';
-
-  // Esconde Undefined enquanto a var porcentagem não é utilizada 
-  if (porcentagem !== undefined && porcentagem !== null) {
-  document.getElementById('total-porcentagem').textContent = porcentagem + '%';
- } else {
-  document.getElementById('total-porcentagem').textContent = '';
- }
-
   /* Barras de progresso */
 
   document.querySelectorAll('.barra-preenchimento').forEach(function (b) {
@@ -459,8 +482,11 @@ document.getElementById("documentoInstituicao")
     }
 })();
 
-
 </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="~/js/ProgressoCampanha.js"></script>
+
 </body>
 </html>
 

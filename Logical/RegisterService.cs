@@ -1,17 +1,21 @@
-﻿using MySql.Data.MySqlClient;
-using MCMV.Data;
+﻿using MCMV.Data;
 using MCMV.Models;
-    
+using MySql.Data.MySqlClient;
+using System.Collections.Generic;
+
 namespace MCMV.Logical
 {
     public class RegisterService
     {
+        private readonly string _connectionString;
+
         private readonly Database _db;
 
         // Construtor: O ASP.NET vai entregar o Database configurado aqui
-        public RegisterService(Database db)
+        public RegisterService(Database db, IConfiguration configuration)
         {
             _db = db;
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         public bool UsuarioExiste(string documento)
@@ -103,6 +107,82 @@ namespace MCMV.Logical
                 Console.WriteLine("Não foi possivel atualizar");
                 return false;
             }
+        }
+
+        public void RegistrarCampanha(CampanhaModel camp, List<CategoriaCampanhaModel> categorias)
+        {
+            using var conn = new MySqlConnection(_connectionString);
+            conn.Open();
+            using var trans = conn.BeginTransaction();
+
+            try
+            {
+                // 1. Insere a Campanha
+                string sqlCamp = @"INSERT INTO campanhas_tb (nome, rua, cep, numero, bairro, data_inicio, data_fim, descricao, id_instituicao) 
+                           VALUES (@nome, @rua, @cep, @num, @bairro, @ini, @fim, @desc, @inst);
+                           SELECT LAST_INSERT_ID();";
+
+                using var cmdCamp = new MySqlCommand(sqlCamp, conn, trans);
+                cmdCamp.Parameters.AddWithValue("@nome", camp.Nome);
+                cmdCamp.Parameters.AddWithValue("@rua", camp.Rua);
+                cmdCamp.Parameters.AddWithValue("@cep", camp.Cep);
+                cmdCamp.Parameters.AddWithValue("@num", camp.Numero);
+                cmdCamp.Parameters.AddWithValue("@bairro", camp.Bairro);
+                cmdCamp.Parameters.AddWithValue("@ini", camp.DataInicio);
+                cmdCamp.Parameters.AddWithValue("@fim", camp.DataFim);
+                cmdCamp.Parameters.AddWithValue("@desc", camp.Descricao ?? (object)DBNull.Value);
+                cmdCamp.Parameters.AddWithValue("@inst", camp.DocumentoInstituicao);
+
+                int campanhaId = Convert.ToInt32(cmdCamp.ExecuteScalar());
+
+                // 2. Insere as Categorias
+                string sqlCat = @"INSERT INTO categorias_campanha_tb (id_campanha, nome, meta, unidade) 
+                          VALUES (@campId, @nome, @meta, @unidade)";
+
+                foreach (var cat in categorias)
+                {
+                    using var cmdCat = new MySqlCommand(sqlCat, conn, trans);
+                    cmdCat.Parameters.AddWithValue("@campId", campanhaId);
+                    cmdCat.Parameters.AddWithValue("@nome", cat.Nome);
+                    cmdCat.Parameters.AddWithValue("@meta", cat.Meta);
+                    cmdCat.Parameters.AddWithValue("@unidade", cat.Unidade);
+                    cmdCat.ExecuteNonQuery();
+                }
+
+                trans.Commit();
+            }
+            catch
+            {
+                trans.Rollback();
+                throw;
+            }
+        }
+
+        public List<CampanhaModel> ListarCampanhasPorInstituicao(string documento)
+        {
+            var lista = new List<CampanhaModel>();
+            using var conn = new MySqlConnection(_connectionString);
+            conn.Open();
+
+            // Buscamos as campanhas filtrando pelo documento da instituição
+            string sql = "SELECT * FROM campanhas_tb WHERE id_instituicao = @doc ORDER BY data_inicio DESC";
+
+            using var cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@doc", documento);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                lista.Add(new CampanhaModel
+                {
+                    Id = Convert.ToInt32(reader["id_campanha"]),
+                    Nome = reader["nome"].ToString(),
+                    DataInicio = Convert.ToDateTime(reader["data_inicio"]),
+                    DataFim = Convert.ToDateTime(reader["data_fim"]),
+                    // Adicione os outros campos se necessário
+                });
+            }
+            return lista;
         }
     }
 }

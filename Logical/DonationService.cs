@@ -47,5 +47,32 @@ namespace MCMV.Logical
 
             cmd.ExecuteNonQuery();
         }
+
+        // Exemplo de como deve ser a implementação dentro do seu DonationService
+        public List<CategoriaCampanhaModel> ListarCategoriasPorCampanha(int idCampanha)
+        {
+            var categorias = new List<CategoriaCampanhaModel>();
+
+            // Exemplo de lógica de conexão (Ajuste para o seu _context ou connection string)
+            using (var conn = new MySqlConnection(_connectionString))
+            {
+                // Certifique-se de que os nomes das colunas (AS Nome, AS Meta...) 
+                // coincidem com as propriedades do seu CategoriaCampanhaModel
+                string sql = @"SELECT id_categoria AS Id, 
+                              id_campanha AS CampanhaId, 
+                              nome_categoria AS Nome, 
+                              meta_categoria AS Meta, 
+                              atual_categoria AS Atual, 
+                              unidade_categoria AS Unidade 
+                       FROM categorias_campanha_tb 
+                       WHERE id_campanha = @id";
+
+                // Se estiver usando Dapper:
+                // return conn.Query<CategoriaCampanhaModel>(sql, new { id = idCampanha }).ToList();
+
+                // Se estiver usando ADO.NET puro, você faria o preenchimento manual da lista aqui.
+                return categorias;
+            }
+        }
     }
 }

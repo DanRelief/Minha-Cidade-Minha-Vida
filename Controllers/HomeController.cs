@@ -1,10 +1,12 @@
 using MCMV.Data;
 using MCMV.Logical;
 using MCMV.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Mysqlx.Expr;
 using System.Text.RegularExpressions;
+using static MCMV.Models.CampanhaModel;
+using System.Collections.Generic;
 
 namespace MCMV.Controllers
 {
@@ -95,7 +97,20 @@ namespace MCMV.Controllers
 
         //----Instituição----
         [HttpGet]
-        public IActionResult IndexInstituicao() => View();
+        public IActionResult IndexInstituicao()
+        {
+            // Pegamos o documento da sessão
+            string? instDoc = HttpContext.Session.GetString("Documento");
+
+            if (string.IsNullOrEmpty(instDoc))
+                return RedirectToAction("Login");
+
+            // Buscamos as campanhas no banco
+            var campanhas = _registerService.ListarCampanhasPorInstituicao(instDoc);
+
+            // Enviamos a lista para a View
+            return View(campanhas);
+        }
 
 
         [HttpPost]
@@ -195,6 +210,78 @@ namespace MCMV.Controllers
                 return RedirectToAction("IndexUsuario");
             }
             return View("FacaUmaDoacao", doacao);
+        }
+
+        [HttpPost]
+        public IActionResult RegistrarCampanha(
+            string nomeDaCampanha, string rua, string cep, string numeroEnderec, string bairro,
+            string cat1_nome, int cat1_meta, string cat1_unidade,
+            string? cat2_nome, int? cat2_meta, string? cat2_unidade,
+            string? cat3_nome, int? cat3_meta, string? cat3_unidade,
+            DateTime data_inicio, DateTime data_fim, string? descricao)
+        {
+            // Pegar o documento da instituição logada (assumindo que salvou no Session no Login)
+            string? instDoc = HttpContext.Session.GetString("Documento");
+
+            if (string.IsNullOrEmpty(instDoc)) return RedirectToAction("Login");
+
+            // Criar objeto Campanha
+            var novaCamp = new CampanhaModel
+            {
+                Nome = nomeDaCampanha,
+                Rua = rua,
+                Cep = cep,
+                Numero = numeroEnderec,
+                Bairro = bairro,
+                DataInicio = data_inicio,
+                DataFim = data_fim,
+                Descricao = descricao,
+                DocumentoInstituicao = instDoc
+            };
+
+            // Criar lista de categorias (Sempre adiciona a 1, as outras se preenchidas)
+            var listaCategorias = new List<CategoriaCampanhaModel>();
+            listaCategorias.Add(new CategoriaCampanhaModel { Nome = cat1_nome, Meta = cat1_meta, Unidade = cat1_unidade });
+
+            if (!string.IsNullOrEmpty(cat2_nome))
+                listaCategorias.Add(new CategoriaCampanhaModel { Nome = cat2_nome, Meta = cat2_meta ?? 0, Unidade = cat2_unidade ?? "UNI" });
+
+            if (!string.IsNullOrEmpty(cat3_nome))
+                listaCategorias.Add(new CategoriaCampanhaModel { Nome = cat3_nome, Meta = cat3_meta ?? 0, Unidade = cat3_unidade ?? "UNI" });
+
+            // Salvar
+            _registerService.RegistrarCampanha(novaCamp, listaCategorias);
+
+            TempData["VerifMensagem"] = "Campanha registrada com sucesso!";
+            TempData["VerifTipo"] = "sucesso";
+
+            return RedirectToAction("IndexInstituicao");
+        }
+
+        [HttpGet]
+        public IActionResult ObterProgressoCampanha(int id)
+        {
+            // 1. Busca as categorias vinculadas a essa campanha no banco
+            var categorias = _donationService.ListarCategoriasPorCampanha(id);
+
+            if (categorias == null || !categorias.Any()) return NotFound();
+
+            // 2. Calcula o total geral para o gráfico em anel
+            double metaTotal = categorias.Sum(c => c.Meta);
+            double atualTotal = categorias.Sum(c => c.Atual);
+            double porcentagemGeral = metaTotal > 0 ? (atualTotal / metaTotal) * 100 : 0;
+
+            return Json(new
+            {
+                porcentagemGeral = Math.Round(porcentagemGeral, 1),
+                categorias = categorias.Select(c => new {
+                    nome = c.Nome,
+                    meta = c.Meta,
+                    atual = c.Atual,
+                    unidade = c.Unidade,
+                    porcentagem = c.Meta > 0 ? Math.Round(((double)c.Atual / c.Meta) * 100, 1) : 0
+                })
+            });
         }
 
         //Saindo da Sessão

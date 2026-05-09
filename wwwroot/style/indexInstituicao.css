@@ -734,3 +734,116 @@ td {
     color: #856404;
     border-color: #ffeeba;
 }
+
+.categoria-item {
+    margin-bottom: 15px;
+}
+
+.info-cat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.barra-progresso-bg {
+    background: #e9ecef;
+    height: 8px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.barra-progresso-fill {
+    background: #28a745;
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+}
+
+/* ======================================================= */
+/* Ajustes para o Gráfico Chart.js e Categorias Dinâmicas */
+
+.graficoTotal-container {
+    position: relative;
+    width: 150px; /* Tamanho ideal para não quebrar o layout */
+    height: 150px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Garante que o Canvas ocupe todo o container */
+#graficoCampanha {
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+.porcentagemTotal-numero {
+    position: absolute;
+    /* Centralização matemática perfeita */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: 800;
+    color: #333;
+    pointer-events: none;
+}
+
+/* Estilização das Categorias Dinâmicas (JS) */
+.categoria-item {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.info-cat {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 8px;
+}
+
+    .info-cat span:first-child {
+        font-weight: 700;
+        font-size: 14px;
+        color: #444;
+    }
+
+    .info-cat span:last-child {
+        font-size: 12px;
+        color: #777;
+        font-weight: 600;
+    }
+
+.barra-progresso-bg {
+    background: #eee;
+    height: 10px;
+    border-radius: 20px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.barra-progresso-fill {
+    background: #18b07c; /* Verde padrão do seu sistema */
+    height: 100%;
+    border-radius: 20px;
+    transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Ajuste na Legenda para acompanhar o novo tamanho do gráfico */
+.Legenda {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    margin-top: 20px;
+    padding-left: 5px;
+}
+
+.LegendaProgresso {
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+}
