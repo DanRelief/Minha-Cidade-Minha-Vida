@@ -21,7 +21,8 @@ namespace MCMV.Logical
             using var conn = new MySqlConnection(_connectionString);
             conn.Open();
 
-            const string sql = "INSERT INTO solicitacaodoacao (Instituicao, DescricaoNecessidade, NivelUrgencia, PreferenciaContato) " +
+            // Alterado os nomes das colunas para bater com o seu banco de dados correto
+            const string sql = "INSERT INTO solicitacaodoacao (nome_user, descricao_necessidade, nivel_urgencia, contato) " +
                                "VALUES (@inst, @desc, @urg, @contato)";
 
             using var cmd = new MySqlCommand(sql, conn);
@@ -121,7 +122,7 @@ namespace MCMV.Logical
             const string sqlSolicitadas = @"
         SELECT COUNT(*) 
         FROM solicitacaodoacao 
-        WHERE LOWER(Instituicao) COLLATE utf8mb4_general_ci LIKE LOWER(@nomeUser) COLLATE utf8mb4_general_ci";
+        WHERE LOWER(nome_user) COLLATE utf8mb4_general_ci LIKE LOWER(@nomeUser) COLLATE utf8mb4_general_ci";
 
             const string sqlEnviadas = "SELECT COUNT(*) FROM fazerumadoacao WHERE DocumentoDoador = @doc";
             const string sqlEspontaneas = "SELECT COUNT(*) FROM fazerumadoacao WHERE DocumentoDoador = @doc AND (Campanha IS NULL OR Campanha = '' OR Campanha = 'Doação Avulsa')";
