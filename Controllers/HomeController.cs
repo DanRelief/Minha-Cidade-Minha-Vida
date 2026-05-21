@@ -326,6 +326,14 @@ namespace MCMV.Controllers
             return View(dados); 
         }
 
+        //Controller de Mapa
+        [HttpGet]
+        public async Task<IActionResult> MapaCampanhas()
+        {
+            var dados = await _localizacaoService.ObterCampanhasNoMapaAsync();
+            return Json(dados);
+        }
+
         //Saindo da Sessão
 
         [HttpPost]

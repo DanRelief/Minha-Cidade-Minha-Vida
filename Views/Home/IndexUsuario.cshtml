@@ -49,7 +49,18 @@
 
 <!-- ✅ 2️⃣ Depois, seu código -->
 <script>
-    const map = L.map('map').setView([-22.41, -47.56], 13);
+    const map = L.map('map').setView([-22.363748, -47.378546], 13);
+
+    
+    var redIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34]
+    });
+
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
@@ -59,9 +70,9 @@
     .then(res => res.json())
     .then(pontos => {
     pontos.forEach(p => {
-    L.marker([p.lat, p.lng])
+    L.marker([p.lat, p.lng],{ icon: redIcon }).addTo(map)
     .addTo(map)
-    .bindPopup(`<strong>${p.nome}</strong>
+    .bindPopup(`<a href="https://localhost:7121/Home/FacaUmaDoacao"><strong>${p.nome}</strong></a>
     
     <div class="popup-endereco">
     ${p.bairro}
